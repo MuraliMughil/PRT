@@ -1,0 +1,45 @@
+---
+- name: Install Java 21 and Jenkins on current machine
+  hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+
+    - name: Install Java 21 and dependencies
+      ansible.builtin.dnf:
+        name:
+          - java-21-amazon-corretto
+          - wget
+          - git
+        state: present
+        update_cache: true
+
+    - name: Remove Java 17
+      ansible.builtin.dnf:
+        name: java-17-amazon-corretto
+        state: absent
+
+    - name: Add Jenkins repository key
+      ansible.builtin.rpm_key:
+        state: present
+        key: https://pkg.jenkins.io/redhat-stable/jenkins.io-2026.key
+
+    - name: Add Jenkins repository
+      ansible.builtin.get_url:
+        url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+        dest: /etc/yum.repos.d/jenkins.repo
+        mode: '0644'
+
+    - name: Install Jenkins
+      ansible.builtin.dnf:
+        name: jenkins
+        state: present
+        update_cache: true
+
+    - name: Enable and start Jenkins
+      ansible.builtin.systemd:
+        name: jenkins
+        enabled: true
+        state: started
+        daemon_reload: true
