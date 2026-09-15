@@ -1,5 +1,5 @@
 ---
-- name: Install Java 21 and Jenkins on current machine
+- name: Install Java 21 and Jenkins on master machine
   hosts: localhost
   connection: local
   become: true
