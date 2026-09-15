@@ -1,0 +1,70 @@
+Title: CI/CD Automation with Docker and Kubernetes using DevOps Tools
+Problem Statement
+An organization wants to automate the build and deployment of a containerized web application using a simplified DevOps workflow.
+
+As a DevOps Engineer, you must implement a working CI/CD pipeline that demonstrates hands-on knowledge of Git, Docker, Ansible, Jenkins, Terraform, and Kubernetes. 
+
+The focus is on automation and integration, not on complex infrastructure or production hardening.
+
+ 
+Infrastructure Overview 
+You will work with three machines only:
+
+Machine Name	Role
+ci-master	Ansible Master + Jenkins Server
+ci-agent	Jenkins Agent (Docker enabled)
+k8s-node	Single-node Kubernetes Cluster
+Kubernetes can be installed as single-node
+
+(control-plane + worker on same machine).
+
+Tasks to Be Performed
+1. Git – Source Code Management
+
+Create a Git repository.
+Push:
+Dockerfile
+Jenkinsfile
+Ansible playbook
+Terraform configuration
+Kubernetes YAML files
+2. Ansible – Configuration Management
+From ci-master:
+Install Jenkins and Java on ci-master
+Install Docker and Java on ci-agent
+Verify services are running
+3. Jenkins – CI Pipeline
+Configure Jenkins using a Jenkinsfile from Git.
+Pipeline should:
+Pull code from Git
+Build a Docker image
+Docker image must display:(PRT – CI/CD Completed Successfully”)
+4. Terraform – Infrastructure Provisioning
+Using Terraform, provision one instance:
+k8s-node
+Execute:
+terraform init
+terraform apply
+5. Kubernetes – Deployment
+Install Kubernetes on k8s-node
+Create:
+Deployment
+Service
+Deploy the Docker image built by Jenkins.
+Verify the application is running.
+ 
+Evaluation Rubric (Total: 20 Marks)
+Section	Criteria	Marks
+Git	Repository contains all required files	3 Marks
+Ansible	Correct configuration applied on both nodes	4 Marks
+Jenkins	Pipeline successfully builds Docker image	5 Marks
+Terraform	Infrastructure provisioning completed successfully	3 Marks
+Kubernetes	Application deployed and accessible	5 Marks
+Total		20 Marks
+Submission Requirements
+Git repository link
+Screenshots/logs of:
+Jenkins pipeline execution
+Terraform apply
+Kubernetes pod and service status
+Application output in browser
