@@ -6,7 +6,6 @@ pipeline {
     environment {
         IMAGE_NAME  = 'prt-cicd'
         IMAGE_TAG   = 'latest'
-        TARGET_USER = 'ec2-user'
         TARGET_HOST = '10.0.8.80'
         IMAGE_FILE  = '/tmp/prt-cicd.tar.gz'
     }
@@ -27,7 +26,7 @@ pipeline {
             }
         }
 
-        stage('Run Docker on Server 1') {
+        stage('Run Docker on Jenkins Agent') {
             steps {
                 sh '''
                     docker stop ${IMAGE_NAME} || true
@@ -54,36 +53,64 @@ pipeline {
             }
         }
 
-        stage('Copy Image to Server 2') {
+        stage('Copy Image to Target Server') {
             steps {
-                sshagent(['K8S-node']) {
+                withCredentials([
+                    sshUserPrivateKey(
+                        credentialsId: 'K8S-node',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
+                    )
+                ]) {
                     sh '''
-                        scp -o StrictHostKeyChecking=no \
-                            ${IMAGE_FILE} \
-                            ${TARGET_USER}@${TARGET_HOST}:${IMAGE_FILE}
+                        chmod 600 "$SSH_KEY"
+
+                        scp \
+                            -i "$SSH_KEY" \
+                            -o StrictHostKeyChecking=no \
+                            "${IMAGE_FILE}" \
+                            "${SSH_USER}@${TARGET_HOST}:${IMAGE_FILE}"
                     '''
                 }
             }
         }
 
-        stage('Load Image on Server 2') {
+        stage('Load Image on Target Server') {
             steps {
-                sshagent(['K8S-node']) {
+                withCredentials([
+                    sshUserPrivateKey(
+                        credentialsId: 'K8S-node',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
+                    )
+                ]) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no \
-                            ${TARGET_USER}@${TARGET_HOST} \
+                        chmod 600 "$SSH_KEY"
+
+                        ssh \
+                            -i "$SSH_KEY" \
+                            -o StrictHostKeyChecking=no \
+                            "${SSH_USER}@${TARGET_HOST}" \
                             "gunzip -c ${IMAGE_FILE} | docker load"
                     '''
                 }
             }
         }
 
-        stage('Verify Image on Server 2') {
+        stage('Verify Image on Target Server') {
             steps {
-                sshagent(['K8S-node']) {
+                withCredentials([
+                    sshUserPrivateKey(
+                        credentialsId: 'K8S-node',
+                        keyFileVariable: 'SSH_KEY',
+                        usernameVariable: 'SSH_USER'
+                    )
+                ]) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no \
-                            ${TARGET_USER}@${TARGET_HOST} \
+                        ssh \
+                            -i "$SSH_KEY" \
+                            -o StrictHostKeyChecking=no \
+                            "${SSH_USER}@${TARGET_HOST}" \
                             "docker images ${IMAGE_NAME}"
                     '''
                 }
