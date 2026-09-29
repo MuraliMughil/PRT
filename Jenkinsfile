@@ -21,7 +21,6 @@ pipeline {
                 sh ' docker run -d --name prt-test -p 8081:80 prt-cicd:latest'
                 sh 'sleep 3'
                 sh 'curl -f http://localhost:8081'
-                sh ' docker rm -f prt-test'
             }
         }
     }
