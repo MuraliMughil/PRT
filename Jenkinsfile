@@ -7,7 +7,7 @@ pipeline {
         IMAGE_NAME  = 'prt-cicd'
         IMAGE_TAG   = 'latest'
         TARGET_USER = 'ec2-user'
-        TARGET_HOST = '10.0.3.30'
+        TARGET_HOST = '10.0.8.80'
         IMAGE_FILE  = '/tmp/prt-cicd.tar.gz'
     }
 
